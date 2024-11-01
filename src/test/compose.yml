@@ -1,0 +1,38 @@
+services:
+  liquibase-test:
+    image: liquibase/liquibase:4.27
+    depends_on:
+      - db-service-test
+    environment:
+      - LIQUIBASE_COMMAND_URL=jdbc:postgresql://db-service-test:5432/postgres
+      - LIQUIBASE_COMMAND_USERNAME=postgres
+      - LIQUIBASE_COMMAND_PASSWORD=postgres
+      - LIQUIBASE_COMMAND_CHANGELOG_FILE=db.changelog.xml
+      - LIQUIBASE_SEARCH_PATH=changelog,scripts
+      - USER=postgres
+    volumes:
+      - ./../../liquibase/changelog:/liquibase/changelog
+      - ./../../liquibase/scripts:/liquibase/scripts
+    command:
+      - "update"
+
+  db-service-test:
+    image: postgres:17-alpine3.20
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1'
+          memory: 250M
+        reservations:
+          memory: 250M
+
+networks:
+  default:
+    name: local-network
