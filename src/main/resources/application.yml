@@ -1,0 +1,12 @@
+spring.application.name: springboot-testcontainers-docker-compose
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=testcontainer&password=postgres&user=postgres
+  jpa:
+    generate-ddl: 'false'
+    show-sql: 'false'
+    hibernate:
+      ddl-auto: validate
+  sql:
+    init:
+      platform: postgres
