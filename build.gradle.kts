@@ -29,7 +29,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-rest")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    implementation("org.apache.commons:commons-csv:1.10.0")
+    implementation("org.apache.commons:commons-csv:1.12.0")
     implementation("commons-io:commons-io:2.15.1")
 
     runtimeOnly("org.postgresql:postgresql:42.7.4")
