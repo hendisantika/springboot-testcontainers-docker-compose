@@ -30,7 +30,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
 
     implementation("org.apache.commons:commons-csv:1.12.0")
-    implementation("commons-io:commons-io:2.17.0")
+    implementation("commons-io:commons-io:2.18.0")
 
     runtimeOnly("org.postgresql:postgresql:42.7.4")
     compileOnly("org.projectlombok:lombok")
