@@ -32,7 +32,7 @@ dependencies {
     implementation("org.apache.commons:commons-csv:1.14.0")
     implementation("commons-io:commons-io:2.19.0")
 
-    runtimeOnly("org.postgresql:postgresql:42.7.6")
+    runtimeOnly("org.postgresql:postgresql:42.7.7")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
