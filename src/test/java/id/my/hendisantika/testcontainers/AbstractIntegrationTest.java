@@ -1,17 +1,19 @@
 package id.my.hendisantika.testcontainers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 
@@ -34,6 +36,11 @@ public abstract class AbstractIntegrationTest {
 
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractIntegrationTest.class);
 
+    private static final String DB_SERVICE_NAME = "db-service-test";
+    private static final int DB_PORT = 5432;
+
+    static DockerComposeContainer<?> container;
+
     static {
         File dockerComposeFile = new File("src/test/compose.yml");
 
@@ -41,14 +48,14 @@ public abstract class AbstractIntegrationTest {
             logger.info("Docker-compose file found in {}", dockerComposeFile.getAbsolutePath());
             logger.info("Starting docker-compose container. This should happen only once before all tests.");
 
-            DockerComposeContainer<?> container = new DockerComposeContainer<>(dockerComposeFile)
-                    .withExposedService("db-service-test", 5432)
+            container = new DockerComposeContainer<>(dockerComposeFile)
+                    .withExposedService(DB_SERVICE_NAME, DB_PORT)
                     .waitingFor(
                             "liquibase-test",
                             Wait.forLogMessage(
                                             ".*Liquibase command 'update' was executed successfully.*\\n",
                                             1)
-                                    .withStartupTimeout(java.time.Duration.ofMinutes(1)))
+                                    .withStartupTimeout(java.time.Duration.ofMinutes(2)))
                     .withRemoveImages(DockerComposeContainer.RemoveImages.LOCAL);
 
             logger.info("Starting docker-compose container.");
@@ -58,6 +65,25 @@ public abstract class AbstractIntegrationTest {
 
         } else {
             logger.warn("Docker-compose file not found");
+        }
+    }
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        if (container != null) {
+            String host = container.getServiceHost(DB_SERVICE_NAME, DB_PORT);
+            Integer port = container.getServicePort(DB_SERVICE_NAME, DB_PORT);
+
+            String jdbcUrl = String.format(
+                    "jdbc:postgresql://%s:%d/postgres?currentSchema=testcontainer",
+                    host, port
+            );
+
+            logger.info("Configuring database URL: {}", jdbcUrl);
+
+            registry.add("spring.datasource.url", () -> jdbcUrl);
+            registry.add("spring.datasource.username", () -> "postgres");
+            registry.add("spring.datasource.password", () -> "postgres");
         }
     }
 
