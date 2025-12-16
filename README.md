@@ -14,11 +14,11 @@ This project demonstrates how to:
 ## Technologies
 
 - **Java**: 21 (via Gradle Toolchain)
-- **Spring Boot**: 3.4.1
-- **Gradle**: 8.12 (Groovy DSL)
+- **Spring Boot**: 3.5.8
+- **Gradle**: 8.14.1 (Groovy DSL)
 - **Database**: PostgreSQL 17 Alpine
 - **Migration**: Liquibase 4.27
-- **Testing**: Testcontainers 1.20.3, JUnit 5
+- **Testing**: Testcontainers 1.20.4, JUnit 5
 - **ORM**: Spring Data JPA with Hibernate
 
 ## Project Structure
